@@ -14,3 +14,13 @@ export function hasClass(el, className) {
   // test() 方法用于检测一个字符串是否匹配某个模式
   return reg.test(el.className)
 }
+
+export function getData(el, name, val) {
+  const prefix = 'data-'
+  name = prefix + name
+  if (val) {
+    return el.setAttribute(name, val)
+  } else {
+    return el.getAttribute(name)
+  }
+}

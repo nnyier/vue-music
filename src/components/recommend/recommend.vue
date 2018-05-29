@@ -1,34 +1,43 @@
 <template>
     <div class="recommend">
-        <div class="recommend-content">
-            <div v-if="recommends.length" class="slider-wrapper">
-                <slide>
-                    <div v-for="item in recommends" :key="item.id">
-                        <a :href="item.linkUrl">
-                            <img :src="item.picUrl">
-                        </a>
-                    </div>
-                </slide>
-            </div>
-            <div class="recommend-list">
-                <h1 class="list-title">热门歌单推荐</h1>
-                <ul>
-                    <li v-for="item in disList" :key="item.id" class="item">
-                        <div class="icon">
-                            <img :src="item.imgurl" width="60" height="60">
+        <!-- 抽象出来一个滚动组件，同时控制要滚动的元素 -->
+        <scroll class="recommend-content" :data="disList" ref="scroll">
+            <div>
+                <div v-if="recommends.length" class="slider-wrapper">
+                    <slide>
+                        <div v-for="item in recommends" :key="item.id">
+                            <a :href="item.linkUrl">
+                                <!--fastclick遇到class="needsclick"就不会拦截click事件 -->
+                                <img class="needsclick" @load="loadImage" :src="item.picUrl">
+                            </a>
                         </div>
-                        <div class="text">
-                            <h2 class="name" v-html="item.creator.name"></h2>
-                            <p class="desc" v-html="item.dissname"></p>
-                        </div>
-                    </li>
-                </ul>
+                    </slide>
+                </div>
+                <div class="recommend-list">
+                    <h1 class="list-title">热门歌单推荐</h1>
+                    <ul>
+                        <li v-for="item in disList" :key="item.id" class="item">
+                            <div class="icon">
+                                <img v-lazy="item.imgurl" width="60" height="60">
+                            </div>
+                            <div class="text">
+                                <h2 class="name" v-html="item.creator.name"></h2>
+                                <p class="desc" v-html="item.dissname"></p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
             </div>
-        </div>
+            <div class="loading-container" v-show="!disList.length">
+                <loading></loading>
+            </div>
+        </scroll>
     </div>
 </template>
 
 <script>
+import Loading from "../../base/loading/loading";
+import Scroll from "../../base/scroll/scroll";
 import Slide from "../../base/slider/slide";
 import { getRecommend, getDiscList } from "../../api/recommend";
 import { ERR_OK } from "../../api/config";
@@ -57,10 +66,19 @@ export default {
           this.disList = res.data.list;
         }
       });
+    },
+    loadImage() {
+      // 不需要每次加载图片都去调用refresh方法
+      if (!this.checkLoaded) {
+        this.$refs.scroll.refresh();
+        this.checkLoaded = true;
+      }
     }
   },
   components: {
-    Slide
+    Slide,
+    Scroll,
+    Loading
   }
 };
 </script>
