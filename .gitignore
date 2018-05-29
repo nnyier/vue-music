@@ -1,6 +1,7 @@
 .DS_Store
 node_modules/
 /dist/
+项目源码/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
