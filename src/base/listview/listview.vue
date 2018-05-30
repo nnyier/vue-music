@@ -19,14 +19,22 @@
         </li>
       </ul>
     </div>
+    <div class="list-fixed" v-show="fixedTitle" ref="fixed">
+      <div class="fixed-title">{{fixedTitle}}</div>
+    </div>
+    <div class="loading-container" v-show="!data.length">
+      <loading></loading>
+    </div>
   </scroll>
 </template>
 
 <script>
 import Scroll from "../../base/scroll/scroll";
 import { getData } from "../../common/js/dom";
+import Loading from "../../base/loading/loading";
 // 根据样式设置锚点高度
 const ANCHOR_HEIGHT = 18;
+const TITLE_HEIGHT = 30;
 
 export default {
   // 在vue里，会监测data，props，computed的变化，以便跟dom映射
@@ -40,7 +48,8 @@ export default {
   data() {
     return {
       scrollY: -1,
-      currentIndex: 0
+      currentIndex: 0,
+      diff: -1
     };
   },
   props: {
@@ -55,6 +64,16 @@ export default {
       return this.data.map(group => {
         return group.title.substr(0, 1);
       });
+    },
+    // 滚动时，让对应title固定在列表顶部
+    fixedTitle() {
+      if (this.scrollY > 0) {
+        return "";
+      }
+      // 判断是否有title
+      return this.data[this.currentIndex]
+        ? this.data[this.currentIndex].title
+        : "";
     }
   },
   methods: {
@@ -83,6 +102,19 @@ export default {
       this.scrollY = pos.y;
     },
     _scrollTo(index) {
+      // 去除 快速入口首尾的点击事件
+      if (!index && index !== 0) {
+        return;
+      }
+      // 处理index边界
+      if (index < 0) {
+        index = 0;
+      } else if (index > this.listHeight.length - 2) {
+        // 上限是最后一个元素
+        index = this.listHeight.length - 2;
+      }
+      // 点击和滚动快速入口，高亮
+      this.scrollY = -this.listHeight[index];
       this.$refs.listview.scrollToElement(this.$refs.listGroup[index], 0);
     },
     _calculateHeight() {
@@ -107,21 +139,38 @@ export default {
     },
     scrollY(newY) {
       const listHeight = this.listHeight;
+      // 滚动到顶部 newY > 0
+      this.currentIndex = 0;
+      // 在中间位置
       // scrollY和listHeight对比，就可以知道，移动落到哪个区间
-      for (let i = 0; i < listHeight.length; i++) {
+      for (let i = 0; i < listHeight.length - 1; i++) {
         let height1 = listHeight[i];
         let height2 = listHeight[i + 1];
-        if (!height2 || (-newY > height1 && -newY < height2)) {
+        if (-newY >= height1 && -newY < height2) {
           this.currentIndex = i;
-          console.log(this.currentIndex);
+          // 处理 滚动时，两个title重合的情况
+          this.diff = height2 + newY;
           return;
         }
       }
-      this.currentIndex = 0;
+      // 滚动到底部，且-newY大于最后一个元素上限（当列表元素过少，没有铺满屏 ）
+      this.currentIndex = listHeight.length - 2;
+    },
+    // 计算差值，让两个title 重合时，后者挤掉前者的效果
+    diff(newVal) {
+      let fixedTop =
+        newVal > 0 && newVal < TITLE_HEIGHT ? newVal - TITLE_HEIGHT : 0;
+      // 减少dom操作
+      if (this.fixedTop === fixedTop) {
+        return;
+      }
+      this.fixedTop = fixedTop;
+      this.$refs.fixed.style.transform = `translate3d(0,${fixedTop}px,0)`;
     }
   },
   components: {
-    Scroll
+    Scroll,
+    Loading
   }
 };
 </script>
@@ -199,7 +248,7 @@ export default {
     width: 100%;
 
     .fixed-title {
-      height: 300px;
+      height: 30px;
       line-height: 30px;
       padding-left: 20px;
       font-size: $font-size-small;
