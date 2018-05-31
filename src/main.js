@@ -3,10 +3,15 @@
 import 'babel-polyfill'
 import Vue from 'vue'
 import App from './App'
+// 注册路由
 import router from './router'
-import 'common/stylus/index.styl'
+// 注册vuex
+import store from './store'
 import fastclick from 'fastclick'
 import VueLazyLoad from 'vue-lazyload'
+
+import 'common/stylus/index.styl'
+
 Vue.config.productionTip = false
 
 // 解决移动端延迟300ms
@@ -19,6 +24,7 @@ Vue.use(VueLazyLoad, {
 new Vue({
   el: '#app',
   router,
+  store,
   components: {
     App
   },

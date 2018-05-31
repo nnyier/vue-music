@@ -5,7 +5,8 @@
       <li v-for="group in data" class="list-group" :key="group.id" ref="listGroup">
         <h2 class="list-group-title">{{group.title}}</h2>
         <ul>
-          <li v-for="item in group.items" class="list-group-item" :key="item.id">
+          <!-- 点击列表元素 进入二级页面 singer-detail路由 -->
+          <li @click="selectItem(item)" v-for="item in group.items" class="list-group-item" :key="item.id">
             <img class="avatar" v-lazy="item.avatar">
             <span class="name">{{item.name}}</span>
           </li>
@@ -77,6 +78,10 @@ export default {
     }
   },
   methods: {
+    // 将selectItem(item)派发出去,让外界知道点击了什么元素
+    selectItem(item) {
+      this.$emit("select", item);
+    },
     onShortcutTouchStart(ev) {
       // 获取数据
       let anchorIndex = getData(ev.target, "index");

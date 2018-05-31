@@ -5,35 +5,6 @@ import {
   options
 } from './config'
 
-// 歌手： https://y.qq.com/portal/singer_list.html
-// export function getSingerList() {
-//   const url = 'https://u.y.qq.com/cgi-bin/musicu.fcg'
-//   const data = Object.assign({}, commonParams, {
-//     loginUin: 0,
-//     hostUin: 0,
-//     platform: 'yqq',
-//     needNewCode: 0,
-//     data: {
-//       "comm": {
-//         "ct": 24,
-//         "cv": 10000
-//       },
-//       "singerList": {
-//         "module": "Music.SingerListServer",
-//         "method": "get_singer_list",
-//         "param": {
-//           "area": -100,
-//           "sex": -100,
-//           "genre": -100,
-//           "index": -100,
-//           "sin": 0,
-//           "cur_page": 1
-//         }
-//       }
-//     }
-//   })
-//   return jsonp(url, data, options)
-// }
 export function getSingerList() {
   const url = 'https://c.y.qq.com/v8/fcg-bin/v8.fcg'
 
@@ -47,6 +18,43 @@ export function getSingerList() {
     needNewCode: 0,
     platform: 'yqq'
   })
-
   return jsonp(url, data, options)
 }
+
+export function getSingerDetail(singerId) {
+  const url = 'https://c.y.qq.com/v8/fcg-bin/fcg_v8_singer_track_cp.fcg'
+  const data = Object.assign({}, commonParams, {
+    loginUin: 0,
+    hostUin: 0,
+    platform: 'yqq',
+    needNewCode: 0,
+    singermid: singerId,
+    order: 'listen',
+    begin: 0,
+    num: 100,
+    songstatus: 1
+  })
+  return jsonp(url, data, options)
+}
+
+// export function getSingerAddress(musicid) {
+//   const url = 'https://c.y.qq.com/base/fcgi-bin/fcg_music_express_mobile3.fcg'
+//   const a = 'MusicJsonCallback' + (Math.random() + "").replace("0", "")
+//   const data = Object.assign({}, commonParams, {
+//     loginUin: 0,
+//     hostUin: 0,
+//     platform: 'yqq',
+//     needNewCode: 0,
+//     cid: 205361747,
+//     uin: 0,
+//     guid: '1849502645',
+//     songmid: musicid.songmid,
+//     filename: `C400 + ${musicid.songmid} + .m4a`,
+//     callback: a
+//   })
+//   const options = {
+//     param: 'jsonpCallback',
+//     name: a
+//   }
+//   return jsonp(url, data, options)
+// }
