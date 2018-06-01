@@ -63,6 +63,21 @@ export default {
         if (musicData.songid && musicData.albummid) {
           ret.push(createSong(musicData));
         }
+
+        // list.forEach(item => {
+        //   let { musicData } = item;
+        //   // createSong必传两个参数
+        //   if (musicData.songid && musicData.albummid) {
+        //     getMusic(musicData.songid).then(res => {
+        //       if (res.code === ERR_OK) {
+        //         const svkey = res.data.items;
+        //         const songVkey = svkey[0].songVkey;
+        //         const newSong = createSong(musicData, songVkey);
+        //         ret.push(newSong);
+        //       }
+        //     });
+        //   }
+        // });
       });
       return ret;
     }
