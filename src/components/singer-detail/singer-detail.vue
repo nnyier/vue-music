@@ -42,12 +42,9 @@ export default {
       getSingerDetail(this.singer.id)
         .then(res => {
           if (res.code === ERR_OK) {
-            // console.log(res);
-            // console.log(res.data);
-            console.log(res.data.list);
-            // console.log(res.data.singer_mid);
+            // console.log(res.data.list);
             this.songs = this._normalizeSongs(res.data.list);
-            console.log(this.songs);
+            // console.log(this.songs);
           }
         })
         .catch(err => {
