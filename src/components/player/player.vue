@@ -14,7 +14,7 @@
                 </div>
                 <div class="middle">
                     <div class="middle-l">
-                        <div class="cd-wrapper">
+                        <div class="cd-wrapper" ref="cdWrapper">
                             <div class="cd">
                                 <img class="image" :src="currentSong.image">
                             </div>
@@ -62,6 +62,9 @@
 
 <script>
 import { mapGetters, mapMutations } from "vuex";
+// 通过js修改css3动画
+import animations from "create-keyframe-animation";
+
 export default {
   computed: {
     ...mapGetters(["fullScreen", "playlist", "currentSong"])
@@ -77,16 +80,46 @@ export default {
     },
     // 动画相关
     enter(el, done) {
-
+      const { x, y, scale } = this._getPosAndScale();
+      let animation = {
+        0: {
+          transform: `translate3d(${x}px, ${y}px, 0) scale(${scale})`
+        },
+        60: {
+          transform: `translate3d(0, 0, 0) scale(1.1)`
+        },
+        100: {
+          transform: `translate3d(0, 0, 0) scale(1)`
+        }
+      };
+      animations.registerAnimation({
+        name: "move",
+        animation,
+        presets: {
+          duration: 400,
+          easing: "linear"
+        }
+      });
+      animations.runAnimation(this.$refs.cdWrapper, "move", done);
     },
     afterEnter() {
-
+      animations.unregisterAnimation("move");
+      this.$refs.cdWrapper.style.animation = "";
     },
-    leave() {
+    leave() {},
+    afterLeave() {},
+    // 初始位置 以及缩放比
+    _getPosAndScale() {
+      const targetWidth = 40;
+      const paddingLeft = 40;
+      const paddingBottom = 30;
+      const paddingTop = 80;
+      const width = window.innerWidth * 0.8;
+      const scale = targetWidth / width;
+      const x = -(window.innerWidth / 2 - paddingLeft);
+      const y = window.innerHeight - paddingTop - width / 2 - paddingBottom;
 
-    },
-    afterLeave() {
-
+      return { x, y, scale };
     },
     ...mapMutations({
       setFullScreen: "SET_FULL_SCREEN"
