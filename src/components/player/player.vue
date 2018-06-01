@@ -45,7 +45,7 @@
         <transition name="mini">
             <div class="mini-player" v-show="!fullScreen" @click="open">
                 <div class="icon">
-                    <img  :class="cdClass" width="40" height="40" :src="currentSong.image">
+                    <img :class="cdClass" width="40" height="40" :src="currentSong.image">
                 </div>
                 <div class="text">
                     <h2 class="name" v-html="currentSong.name"></h2>
@@ -123,9 +123,7 @@ export default {
     leave(el, done) {
       this.$refs.cdWrapper.style.transition = "all 0.4s";
       const { x, y, scale } = this._getPosAndScale();
-      this.$refs.cdWrapper.style[
-        transform
-      ] = `translate3d(${x}px, ${y}px, 0) scale(${scale})`;
+      this.$refs.cdWrapper.style[transform] = `translate3d(${x}px, ${y}px, 0) scale(${scale})`;
       this.$refs.cdWrapper.addEventListener("transitionend", done);
     },
     afterLeave() {
