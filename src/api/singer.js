@@ -37,12 +37,11 @@ export function getSingerDetail(singerId) {
   })
   return jsonp(url, data, options)
 }
-
-export function getMusic(mid) {
+export function getMusic(songmid) {
   const url = '/api/music'
   const data = Object.assign({}, commonParams, {
-    songmid: mid,
-    filename: 'C400' + mid + '.m4a',
+    songmid: songmid,
+    filename: 'C400' + songmid + '.m4a',
     guid: 1849502645,
     platform: 'yqq',
     loginUin: 0,
@@ -55,6 +54,7 @@ export function getMusic(mid) {
   return axios.get(url, {
     params: data
   }).then((res) => {
+    console.log(Promise.resolve(res.data))
     return Promise.resolve(res.data)
   })
 }

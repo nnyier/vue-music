@@ -20,7 +20,7 @@ export default class Song {
   }
 }
 
-export function createSong(musicData, songVkey) {
+export function createSong(musicData, songVkey, guid) {
   return new Song({
     id: musicData.songid,
     mid: musicData.songmid,
@@ -31,7 +31,7 @@ export function createSong(musicData, songVkey) {
     duration: musicData.interval,
     // 数据结构发生变化 应该取得是mid 而不再是albummid
     image: `http://y.gtimg.cn/music/photo_new/T001R300x300M000${filterSingermid(musicData.singer)}.jpg?max_age=2592000`,
-    url: `http://dl.stream.qqmusic.qq.com/C400${musicData.songmid}.m4a?vkey=${songVkey}&guid=2254898176&uin=0&fromtag=66`
+    url: `http://dl.stream.qqmusic.qq.com/C400${musicData.songmid}.m4a?vkey=${songVkey}&guid=1849502645&uin=0&fromtag=66`
     // http://dl.stream.qqmusic.qq.com/C400003TfyNp47dm7E.m4a?vkey=CB3E581A3B78DEBA199D6FF2B843FB5EF1D34167F100F8C5546D2197DA6ABF109EB29CCE9D69A470BD4AFD4D40D37016D9DBDB33F40F5D3D&guid=2254898176&uin=0&fromtag=66
   })
 }

@@ -8,7 +8,7 @@
 <script>
 // vuex 对取数据提供的语法糖
 import { mapGetters } from "vuex";
-import { getSingerDetail } from "../../api/singer";
+import { getSingerDetail, getMusic } from "../../api/singer";
 import { ERR_OK } from "../../api/config";
 import { createSong } from "../../common/js/song";
 import MusicList from "../../components/music-list/music-list";
@@ -57,28 +57,33 @@ export default {
       if (!list) {
         return;
       }
+      // list.forEach(item => {
+      //   let { musicData } = item;
+      //   // createSong必传两个参数
+      //   if (musicData.songid && musicData.albummid) {
+      //     ret.push(createSong(musicData));
+      //   }
+      // console.log(list);
       list.forEach(item => {
         let { musicData } = item;
+        // console.log(musicData);
         // createSong必传两个参数
         if (musicData.songid && musicData.albummid) {
-          ret.push(createSong(musicData));
+          // console.log(musicData.songmid);
+          getMusic(musicData.songmid).then(res => {
+            console.log(getMusic(musicData.songmid));
+            if (res.code === ERR_OK) {
+              // console.log(res);
+              const svkey = res.data.items;
+              const songVkey = svkey[0].vkey;
+              const newSong = createSong(musicData, songVkey);
+              ret.push(newSong);
+            }
+          });
         }
-
-        // list.forEach(item => {
-        //   let { musicData } = item;
-        //   // createSong必传两个参数
-        //   if (musicData.songid && musicData.albummid) {
-        //     getMusic(musicData.songid).then(res => {
-        //       if (res.code === ERR_OK) {
-        //         const svkey = res.data.items;
-        //         const songVkey = svkey[0].songVkey;
-        //         const newSong = createSong(musicData, songVkey);
-        //         ret.push(newSong);
-        //       }
-        //     });
-        //   }
-        // });
       });
+      // });
+      console.log(ret);
       return ret;
     }
   },
