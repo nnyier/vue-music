@@ -54,7 +54,6 @@ export function getMusic(songmid) {
   return axios.get(url, {
     params: data
   }).then((res) => {
-    console.log(Promise.resolve(res.data))
     return Promise.resolve(res.data)
   })
 }

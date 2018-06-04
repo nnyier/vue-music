@@ -26,14 +26,14 @@
                         <div class="icon i-left">
                             <i class="icon-sequence"></i>
                         </div>
-                        <div class="icon i-left">
-                            <i class="icon-prev"></i>
+                        <div class="icon i-left" :class="disableCls">
+                            <i class="icon-prev" @click="prev"></i>
                         </div>
-                        <div class="icon i-center">
-                            <i class="icon-play" @click="togglePlaying" :class="playIcon"></i>
+                        <div class="icon i-center" :class="disableCls">
+                            <i class="icon-pause" @click="togglePlaying" :class="playIcon"></i>
                         </div>
-                        <div class="icon i-right">
-                            <i class="icon-next"></i>
+                        <div class="icon i-right" :class="disableCls">
+                            <i class="icon-next" @click="next"></i>
                         </div>
                         <div class="icon i-right">
                             <i class="icon icon-not-favorite"></i>
@@ -59,7 +59,7 @@
                 </div>
             </div>
         </transition>
-        <audio ref="audio" :src="currentSong.url"></audio>
+        <audio ref="audio" :src="currentSong.url" @canplay="ready" @error="error"></audio>
     </div>
 </template>
 
@@ -71,6 +71,11 @@ import { prefixStyle } from "../../common/js/dom";
 const transform = prefixStyle("transform");
 
 export default {
+  data() {
+    return {
+      songReady: false
+    };
+  },
   computed: {
     cdClass() {
       return this.playing ? "play" : "play pause";
@@ -81,7 +86,16 @@ export default {
     miniIcon() {
       return this.playing ? "icon-pause-mini" : "icon-play-mini";
     },
-    ...mapGetters(["fullScreen", "playlist", "currentSong", "playing"])
+    disableCls() {
+      return this.songReady ? "" : "disable";
+    },
+    ...mapGetters([
+      "fullScreen",
+      "playlist",
+      "currentSong",
+      "playing",
+      "currentIndex"
+    ])
   },
   methods: {
     // 返回
@@ -123,12 +137,50 @@ export default {
     leave(el, done) {
       this.$refs.cdWrapper.style.transition = "all 0.4s";
       const { x, y, scale } = this._getPosAndScale();
-      this.$refs.cdWrapper.style[transform] = `translate3d(${x}px, ${y}px, 0) scale(${scale})`;
+      this.$refs.cdWrapper.style[
+        transform
+      ] = `translate3d(${x}px, ${y}px, 0) scale(${scale})`;
       this.$refs.cdWrapper.addEventListener("transitionend", done);
     },
     afterLeave() {
       this.$refs.cdWrapper.style.transition = "";
       this.$refs.cdWrapper.style[transform] = "";
+    },
+    next() {
+      // 歌曲没有加载完成时，不能点击
+      if (!this.songReady) {
+        return;
+      }
+      let index = this.currentIndex + 1;
+      if (index === this.playlist.length) {
+        index = 0;
+      }
+      this.setCurrentIndex(index);
+      if (!this.playing) {
+        this.togglePlaying();
+      }
+      this.songReady = false;
+    },
+    prev() {
+      // 歌曲songReady没有加载完成时，不能点击
+      if (!this.songReady) {
+        return;
+      }
+      let index = this.currentIndex - 1;
+      if (index === -1) {
+        index = this.playlist.length - 1;
+      }
+      this.setCurrentIndex(index);
+      if (!this.playing) {
+        this.togglePlaying();
+      }
+      this.songReady = false;
+    },
+    ready() {
+      this.songReady = true;
+    },
+    error() {
+      this.songReady = true;
     },
     // 初始位置 以及缩放比
     _getPosAndScale() {
@@ -148,7 +200,8 @@ export default {
     },
     ...mapMutations({
       setFullScreen: "SET_FULL_SCREEN",
-      setPlayingState: "SET_PLAYING_STATE"
+      setPlayingState: "SET_PLAYING_STATE",
+      setCurrentIndex: "SET_CURRENT_INDEX"
     })
   },
   watch: {
@@ -498,7 +551,7 @@ export default {
             width: 30px;
             padding: 0 10px;
 
-            .icon-play-mini, .icon-pause-mini, .icon-playlist {
+            .icon-play-mini, .-mini, .icon-playlist {
                 font-size: 30px;
                 color: $color-theme-d;
             }

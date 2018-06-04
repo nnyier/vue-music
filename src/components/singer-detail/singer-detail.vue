@@ -30,7 +30,6 @@ export default {
   created() {
     this._getDetail();
     this._normalizeSongs();
-    // console.log(this.singer);
   },
   methods: {
     _getDetail() {
@@ -42,9 +41,7 @@ export default {
       getSingerDetail(this.singer.id)
         .then(res => {
           if (res.code === ERR_OK) {
-            // console.log(res.data.list);
             this.songs = this._normalizeSongs(res.data.list);
-            // console.log(this.songs);
           }
         })
         .catch(err => {
@@ -66,14 +63,10 @@ export default {
       // console.log(list);
       list.forEach(item => {
         let { musicData } = item;
-        // console.log(musicData);
         // createSong必传两个参数
         if (musicData.songid && musicData.albummid) {
-          // console.log(musicData.songmid);
           getMusic(musicData.songmid).then(res => {
-            console.log(getMusic(musicData.songmid));
             if (res.code === ERR_OK) {
-              // console.log(res);
               const svkey = res.data.items;
               const songVkey = svkey[0].vkey;
               const newSong = createSong(musicData, songVkey);
@@ -83,7 +76,6 @@ export default {
         }
       });
       // });
-      console.log(ret);
       return ret;
     }
   },
