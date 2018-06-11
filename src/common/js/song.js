@@ -36,7 +36,6 @@ export function createSong(musicData, songVkey, guid) {
     // 197DA6ABF109EB29CCE9D69A470BD4AFD4D40D37016D9DBDB33F40F5D3D&guid=2254898176&uin=0&fromtag=66
   })
 }
-
 function filterSinger(singer) {
   let ret = []
   if (!singer) {
