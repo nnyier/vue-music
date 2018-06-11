@@ -31,6 +31,7 @@ export default {
       //   记录点击时 已偏移的值
       this.touch.left = this.$refs.progress.clientWidth;
     },
+    // 进度条
     progressTouchMove(e) {
       if (!this.touch.initiated) {
         return;
