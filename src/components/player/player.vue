@@ -26,7 +26,7 @@
                     <div class="progress-wrapper">
                         <span class="time time-l">{{format(currentTime)}}</span>
                         <div class="progress-bar-wrapper">
-                            <progress-bar :precent="precent"></progress-bar>
+                            <progress-bar :percent="percent" @percentChange="onProgressBarChange"></progress-bar>
                         </div>
                         <span class="time time-r">{{format(currentSong.duration)}}</span>
                     </div>
@@ -100,7 +100,7 @@ export default {
     disableCls() {
       return this.songReady ? "" : "disable";
     },
-    precent() {
+    percent() {
       return this.currentTime / this.currentSong.duration;
     },
     ...mapGetters([
@@ -207,6 +207,13 @@ export default {
       const minute = (interval / 60) | 0;
       const second = this._pad(interval % 60);
       return `${minute}:${second}`;
+    },
+    // 拖动滚动条改变歌曲播放进度
+    onProgressBarChange(percent) {
+      this.$refs.audio.currentTime = this.currentSong.duration * percent;
+      if (!this.playing) {
+        this.togglePlaying();
+      }
     },
     // 补 0
     _pad(num, n = 2) {
